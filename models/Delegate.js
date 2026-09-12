@@ -73,11 +73,11 @@ delegateSchema.pre('save', async function () {
       const count = await this.constructor.countDocuments();
       this.registrationId = `IUML-2026-${String(count + 1).padStart(4, '0')}`;
     } catch (err) {
-      // Throwing the error passes it directly to your server's global error handler
       throw err; 
     }
   }
 });
+
 
 
 
