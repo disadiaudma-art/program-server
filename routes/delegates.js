@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const Delegate = require('../models/Delegate');
+const cloudinary = require('../config/cloudinary');
 
 // Validation rules
 const delegateValidation = [
@@ -13,8 +14,8 @@ const delegateValidation = [
   body('place').trim().isLength({ min: 2 }).withMessage('Place must be at least 2 characters'),
   body('panchayat').trim().isLength({ min: 2 }).withMessage('Panchayat must be at least 2 characters'),
   body('unit').trim().isLength({ min: 2 }).withMessage('Unit must be at least 2 characters'),
-  body('work').trim().isLength({ min: 2 }).withMessage('Work/Occupation must be at least 2 characters'),
-  body('qualification').trim().isLength({ min: 2 }).withMessage('Qualification must be at least 2 characters'),
+  body('work').optional({ checkFalsy: true }).trim(),
+  body('qualification').optional({ checkFalsy: true }).trim(),
 ];
 
 // POST /api/delegates — Register a new delegate
@@ -35,8 +36,8 @@ router.post('/', delegateValidation, async (req, res) => {
       place,
       panchayat,
       unit,
-      work,
-      qualification,
+      work: work?.trim() || null,
+      qualification: qualification?.trim() || null,
       photoUrl: photoUrl || null,
       photoPublicId: photoPublicId || null,
     });
@@ -125,10 +126,17 @@ router.get('/stats', async (req, res) => {
 // DELETE /api/delegates/:id — Delete a delegate (admin)
 router.delete('/:id', async (req, res) => {
   try {
-    const delegate = await Delegate.findByIdAndDelete(req.params.id);
+    const delegate = await Delegate.findById(req.params.id);
     if (!delegate) return res.status(404).json({ success: false, message: 'Delegate not found' });
+
+    if (delegate.photoPublicId) {
+      await cloudinary.uploader.destroy(delegate.photoPublicId);
+    }
+
+    await delegate.deleteOne();
     res.json({ success: true, message: 'Delegate deleted' });
   } catch (err) {
+    console.error('Error deleting delegate:', err);
     res.status(500).json({ success: false, message: 'Server error.' });
   }
 });

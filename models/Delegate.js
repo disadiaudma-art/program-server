@@ -39,15 +39,13 @@ const delegateSchema = new mongoose.Schema(
     },
     work: {
       type: String,
-      required: [true, 'Work/Occupation is required'],
+      default: null,
       trim: true,
-      minlength: 2,
     },
     qualification: {
       type: String,
-      required: [true, 'Qualification is required'],
+      default: null,
       trim: true,
-      minlength: 2,
     },
     photoUrl: {
       type: String,
