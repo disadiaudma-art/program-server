@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const generateRegistrationId = async function (delegateModel) {
+  let candidate = '';
+  let counter = 1;
+
+  while (true) {
+    candidate = `IUML-2026-${String(counter).padStart(4, '0')}`;
+    const existing = await delegateModel.findOne({ registrationId: candidate }).select('_id');
+    if (!existing) return candidate;
+    counter += 1;
+  }
+};
+
 const delegateSchema = new mongoose.Schema(
   {
     fullName: {
@@ -58,25 +70,17 @@ const delegateSchema = new mongoose.Schema(
     registrationId: {
       type: String,
       unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }
 );
 
-// Auto-generate a short registration ID before saving
-// Updated modern pre-save hook for Mongoose 6/7+
+// Auto-generate a unique registration ID before saving
 delegateSchema.pre('save', async function () {
   if (!this.registrationId) {
-    try {
-      const count = await this.constructor.countDocuments();
-      this.registrationId = `IUML-2026-${String(count + 1).padStart(4, '0')}`;
-    } catch (err) {
-      throw err; 
-    }
+    this.registrationId = await generateRegistrationId(this.constructor);
   }
 });
-
-
-
 
 module.exports = mongoose.model('Delegate', delegateSchema);
