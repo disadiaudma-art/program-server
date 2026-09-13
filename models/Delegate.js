@@ -64,11 +64,19 @@ const delegateSchema = new mongoose.Schema(
 );
 
 // Auto-generate a short registration ID before saving
+// Updated modern pre-save hook for Mongoose 6/7+
 delegateSchema.pre('save', async function () {
   if (!this.registrationId) {
-    const count = await mongoose.model('Delegate').countDocuments();
-    this.registrationId = `IUML-2026-${String(count + 1).padStart(4, '0')}`;
+    try {
+      const count = await this.constructor.countDocuments();
+      this.registrationId = `IUML-2026-${String(count + 1).padStart(4, '0')}`;
+    } catch (err) {
+      throw err; 
+    }
   }
 });
+
+
+
 
 module.exports = mongoose.model('Delegate', delegateSchema);

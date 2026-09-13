@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    origin: process.env.CLIENT_ORIGIN || 'https://upeiuml.vercel.app',
     credentials: true,
   })
 );
@@ -42,9 +42,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+
+
 // ─── MongoDB Connection ───────────────────────────────────────────────────────
 mongoose
-  .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/iuml_malayora')
+  .connect(process.env.MONGO_URI || 'mongodb+srv://disadiaudma_db_user:9QG7VeJfA6V1Sxns@cluster0.dq7uu3v.mongodb.net/Programme')
   .then(() => {
     console.log('✅ MongoDB connected successfully');
     app.listen(PORT, () => {
