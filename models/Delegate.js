@@ -53,11 +53,13 @@ const delegateSchema = new mongoose.Schema(
       type: String,
       default: null,
       trim: true,
+      minlength: 2,
     },
     qualification: {
       type: String,
       default: null,
       trim: true,
+      minlength: 2,
     },
     photoUrl: {
       type: String,

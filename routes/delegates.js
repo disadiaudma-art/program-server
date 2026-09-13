@@ -14,8 +14,16 @@ const delegateValidation = [
   body('place').trim().isLength({ min: 2 }).withMessage('Place must be at least 2 characters'),
   body('panchayat').trim().isLength({ min: 2 }).withMessage('Panchayat must be at least 2 characters'),
   body('unit').trim().isLength({ min: 2 }).withMessage('Unit must be at least 2 characters'),
-  body('work').optional({ checkFalsy: true }).trim(),
-  body('qualification').optional({ checkFalsy: true }).trim(),
+  body('work')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage('Work / Occupation must be at least 2 characters'),
+  body('qualification')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage('Qualification must be at least 2 characters'),
 ];
 
 // POST /api/delegates — Register a new delegate
